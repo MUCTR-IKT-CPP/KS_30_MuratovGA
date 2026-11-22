@@ -1,210 +1,209 @@
+#include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 
-/*
- * Р’С‹РґРµР»СЏРµС‚ РїР°РјСЏС‚СЊ РґР»СЏ РєРІР°РґСЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹ С†РµР»С‹С… С‡РёСЃРµР».
+using namespace std;
+
+/**
+ * Выделяет память под квадратную матрицу n * n и заполняет её нулями.
  *
- * @param size РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ РјР°С‚СЂРёС†С‹.
- * @return СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃРѕР·РґР°РЅРЅСѓСЋ РјР°С‚СЂРёС†Сѓ.
+ * @param n размер стороны матрицы
+ * @return указатель на выделенную матрицу
  */
-int** createMatrix(int const size){
-    int** matrix = new int*[size];
-
-    for(int i = 0; i < size; i++){
-        matrix[i] = new int[size];
+int** allocateMatrix(const int n){
+    int** p_matrix = new int*[n];
+    for(int i = 0; i < n; i++){
+        p_matrix[i] = new int[n];
+        for(int j = 0; j < n; j++){
+            p_matrix[i][j] = 0;
+        }
     }
-
-    return matrix;
+    return p_matrix;
 }
 
-/*
- * РћСЃРІРѕР±РѕР¶РґР°РµС‚ РїР°РјСЏС‚СЊ, Р·Р°РЅСЏС‚СѓСЋ РєРІР°РґСЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†РµР№.
+/**
+ * Освобождает память, выделенную под квадратную матрицу n * n.
  *
- * @param matrix СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СѓРґР°Р»СЏРµРјСѓСЋ РјР°С‚СЂРёС†Сѓ.
- * @param size РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє РјР°С‚СЂРёС†С‹.
- * @return С„СѓРЅРєС†РёСЏ РЅРµ РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ.
+ * @param p_matrix указатель на матрицу
+ * @param n размер стороны матрицы
  */
-void deleteMatrix(int** matrix, int const size){
-    for(int i = 0; i < size; i++){
-        delete[] matrix[i];
+void freeMatrix(int** p_matrix, const int n){
+    if(p_matrix == nullptr){
+        return;
     }
-
-    delete[] matrix;
+    for(int i = 0; i < n; i++){
+        delete[] p_matrix[i];
+    }
+    delete[] p_matrix;
 }
 
-/*
- * Р—Р°РїРѕР»РЅСЏРµС‚ РјР°С‚СЂРёС†Сѓ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё РѕС‚ 0 РґРѕ 9.
+/**
+ * Заполняет матрицу случайными целыми числами от 0 до 9.
  *
- * @param matrix Р·Р°РїРѕР»РЅСЏРµРјР°СЏ РјР°С‚СЂРёС†Р°.
- * @param size РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ РјР°С‚СЂРёС†С‹.
- * @return С„СѓРЅРєС†РёСЏ РЅРµ РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ.
+ * @param p_matrix указатель на матрицу
+ * @param n размер стороны матрицы
  */
-void fillMatrix(int** matrix, int const size){
-    for(int i = 0; i < size; i++){
-        for(int j = 0; j < size; j++){
-            matrix[i][j] = rand() % 10;
+void fillRandom(int** p_matrix, const int n){
+    const int MIN_VALUE = 0;
+    const int MAX_VALUE = 9;
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            p_matrix[i][j] = MIN_VALUE + rand() % (MAX_VALUE - MIN_VALUE + 1);
         }
     }
 }
 
-/*
- * Р’С‹РІРѕРґРёС‚ РјР°С‚СЂРёС†Сѓ РІ С‚РµСЂРјРёРЅР°Р».
+/**
+ * Выводит матрицу в терминал.
  *
- * @param matrix РІС‹РІРѕРґРёРјР°СЏ РјР°С‚СЂРёС†Р°.
- * @param size РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ РјР°С‚СЂРёС†С‹.
- * @return С„СѓРЅРєС†РёСЏ РЅРµ РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ.
+ * @param p_matrix указатель на матрицу
+ * @param n размер стороны матрицы
  */
-void printMatrix(int** matrix, int const size){
-    for(int i = 0; i < size; i++){
-        for(int j = 0; j < size; j++){
-            std::cout << matrix[i][j] << ' ';
+void printMatrix(int** p_matrix, const int n){
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            cout << p_matrix[i][j];
+            if(j + 1 < n){
+                cout << " ";
+            }
         }
-
-        std::cout << '\n';
+        cout << endl;
     }
 }
 
-/*
- * РћС‚СЂР°Р¶Р°РµС‚ РјР°С‚СЂРёС†Сѓ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ РѕСЃРё.
+/**
+ * Создаёт зеркальное отражение матрицы относительно вертикальной оси.
+ * Столбцы меняются местами: левый становится правым и наоборот.
  *
- * @param matrix РёР·РјРµРЅСЏРµРјР°СЏ РјР°С‚СЂРёС†Р°.
- * @param size РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ РјР°С‚СЂРёС†С‹.
- * @return С„СѓРЅРєС†РёСЏ РЅРµ РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ.
+ * @param p_source исходная матрица
+ * @param n размер стороны матрицы
+ * @return новая матрица с вертикальным отражением
  */
-void mirrorVertical(int** matrix, int const size){
-    for(int i = 0; i < size; i++){
-        for(int j = 0; j < size / 2; j++){
-            int const opposite_index = size - 1 - j;
-            int temporary_value = matrix[i][j];
-            matrix[i][j] = matrix[i][opposite_index];
-            matrix[i][opposite_index] = temporary_value;
+int** createVerticalMirror(int** p_source, const int n){
+    int** p_result = allocateMatrix(n);
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            p_result[i][j] = p_source[i][n - 1 - j];
         }
     }
+    return p_result;
 }
 
-/*
- * РћС‚СЂР°Р¶Р°РµС‚ РјР°С‚СЂРёС†Сѓ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ РѕСЃРё.
+/**
+ * Создаёт зеркальное отражение матрицы относительно горизонтальной оси.
+ * Строки меняются местами: верхняя становится нижней и наоборот.
  *
- * @param matrix РёР·РјРµРЅСЏРµРјР°СЏ РјР°С‚СЂРёС†Р°.
- * @param size РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ РјР°С‚СЂРёС†С‹.
- * @return С„СѓРЅРєС†РёСЏ РЅРµ РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ.
+ * @param p_source исходная матрица
+ * @param n размер стороны матрицы
+ * @return новая матрица с горизонтальным отражением
  */
-void mirrorHorizontal(int** matrix, int const size){
-    for(int i = 0; i < size / 2; i++){
-        int const opposite_index = size - 1 - i;
-
-        for(int j = 0; j < size; j++){
-            int temporary_value = matrix[i][j];
-            matrix[i][j] = matrix[opposite_index][j];
-            matrix[opposite_index][j] = temporary_value;
+int** createHorizontalMirror(int** p_source, const int n){
+    int** p_result = allocateMatrix(n);
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            p_result[i][j] = p_source[n - 1 - i][j];
         }
     }
+    return p_result;
 }
 
-/*
- * РЎРѕР·РґР°С‘С‚ РјР°С‚СЂРёС†Сѓ СЃСѓРјРј СЃРѕСЃРµРґРЅРёС… СЌР»РµРјРµРЅС‚РѕРІ СЃРІРµСЂС…Сѓ, СЃРЅРёР·Сѓ, СЃР»РµРІР° Рё СЃРїСЂР°РІР°.
+/**
+ * Строит матрицу, в которой каждый элемент равен сумме соседних элементов.
+ * Соседями считаются клетки сверху, снизу, слева и справа, если они есть.
+ * Сам элемент в сумму не входит.
  *
- * @param matrix РёСЃС…РѕРґРЅР°СЏ РјР°С‚СЂРёС†Р°.
- * @param size РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ РјР°С‚СЂРёС†С‹.
- * @return СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°С‚СЂРёС†Сѓ СЃСѓРјРј СЃРѕСЃРµРґРЅРёС… СЌР»РµРјРµРЅС‚РѕРІ.
+ * @param p_source исходная матрица
+ * @param n размер стороны матрицы
+ * @return новая матрица из сумм соседей
  */
-int** buildNeighborSumMatrix(int** matrix, int const size){
-    int** sum_matrix = createMatrix(size);
-
-    for(int i = 0; i < size; i++){
-        for(int j = 0; j < size; j++){
-            int sum = 0;
-
+int** buildNeighborSumMatrix(int** p_source, const int n){
+    int** p_result = allocateMatrix(n);
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            int neighbor_sum = 0;
             if(i > 0){
-                sum += matrix[i - 1][j];
+                neighbor_sum = neighbor_sum + p_source[i - 1][j];
             }
-
-            if(i < size - 1){
-                sum += matrix[i + 1][j];
+            if(i + 1 < n){
+                neighbor_sum = neighbor_sum + p_source[i + 1][j];
             }
-
             if(j > 0){
-                sum += matrix[i][j - 1];
+                neighbor_sum = neighbor_sum + p_source[i][j - 1];
             }
-
-            if(j < size - 1){
-                sum += matrix[i][j + 1];
+            if(j + 1 < n){
+                neighbor_sum = neighbor_sum + p_source[i][j + 1];
             }
-
-            sum_matrix[i][j] = sum;
+            p_result[i][j] = neighbor_sum;
         }
     }
-
-    return sum_matrix;
+    return p_result;
 }
 
-/*
- * РџСЂРёРЅРёРјР°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°С‚СЂРёС†Сѓ С‡РµСЂРµР· РїР°СЂР°РјРµС‚СЂ С‚РёРїР° void* Рё РІС‹РІРѕРґРёС‚ РµС‘.
+/**
+ * Принимает матрицу через параметр void* и выводит её содержимое.
+ * Указатель приводится обратно к типу int**, после чего матрица печатается.
  *
- * @param matrix_pointer СѓРєР°Р·Р°С‚РµР»СЊ void* РЅР° РјР°С‚СЂРёС†Сѓ.
- * @param size РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ РјР°С‚СЂРёС†С‹.
- * @return С„СѓРЅРєС†РёСЏ РЅРµ РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ.
+ * @param p_data указатель на матрицу, переданный как void*
+ * @param n размер стороны матрицы
  */
-void printMatrixFromVoid(void* matrix_pointer, int const size){
-    int** matrix = static_cast<int**>(matrix_pointer);
-    printMatrix(matrix, size);
+void printMatrixViaVoid(void* p_data, const int n){
+    int** p_matrix = (int**)p_data;
+    printMatrix(p_matrix, n);
 }
 
-/*
- * Р—Р°РїСЂР°С€РёРІР°РµС‚ СЂР°Р·РјРµСЂ РјР°С‚СЂРёС†С‹ Рё РІС‹Р±СЂР°РЅРЅСѓСЋ РѕРїРµСЂР°С†РёСЋ, Р·Р°С‚РµРј РІС‹РІРѕРґРёС‚ СЂРµР·СѓР»СЊС‚Р°С‚.
- *
- * @param Сѓ С„СѓРЅРєС†РёРё РЅРµС‚ РїР°СЂР°РјРµС‚СЂРѕРІ.
- * @return 0 РїСЂРё СѓСЃРїРµС€РЅРѕРј Р·Р°РІРµСЂС€РµРЅРёРё, 1 РїСЂРё РЅРµРІРµСЂРЅРѕРј РІРІРѕРґРµ.
- */
 int main(){
-    int size = 0;
-    int operation = 0;
+    srand((unsigned int)time(nullptr));
 
-    std::cout << "Enter matrix size N: ";
-    std::cin >> size;
+    int input_n = 0;
+    cout << "Enter N: ";
+    cin >> input_n;
 
-    if(size <= 0){
-        std::cout << "N must be greater than zero.\n";
+    if(input_n < 1){
+        cout << "N must be a positive integer." << endl;
         return 1;
     }
 
-    int** matrix = createMatrix(size);
-    srand(time(NULL));
-    fillMatrix(matrix, size);
+    const int n = input_n;
+    int** p_matrix = allocateMatrix(n);
+    fillRandom(p_matrix, n);
 
-    std::cout << "Original matrix:\n";
-    printMatrix(matrix, size);
-    std::cout << "\n1 - Vertical mirror\n";
-    std::cout << "2 - Horizontal mirror\n";
-    std::cout << "3 - Sum of neighbors\n";
-    std::cout << "4 - Pass matrix through void*\n";
-    std::cout << "Choose operation: ";
-    std::cin >> operation;
+    cout << "N = " << n << endl;
+    cout << "Matrix:" << endl;
+    printMatrix(p_matrix, n);
 
-    if(operation == 1){
-        mirrorVertical(matrix, size);
-        std::cout << "\nVertical mirror:\n";
-        printMatrix(matrix, size);
-    }else if(operation == 2){
-        mirrorHorizontal(matrix, size);
-        std::cout << "\nHorizontal mirror:\n";
-        printMatrix(matrix, size);
-    }else if(operation == 3){
-        int** sum_matrix = buildNeighborSumMatrix(matrix, size);
-        std::cout << "\nSum of neighbors:\n";
-        printMatrix(sum_matrix, size);
-        deleteMatrix(sum_matrix, size);
-    }else if(operation == 4){
-        std::cout << "\nMatrix received through void*:\n";
-        printMatrixFromVoid(matrix, size);
+    cout << endl;
+    cout << "Choose an operation:" << endl;
+    cout << "1. Create a vertical-axis mirror" << endl;
+    cout << "2. Create a horizontal-axis mirror" << endl;
+    cout << "3. Build a matrix where each element is the sum of neighbors" << endl;
+    cout << "4. Pass the array to a function via void*" << endl;
+    cout << "Operation: ";
+
+    int choice = 0;
+    cin >> choice;
+
+    int** p_result = nullptr;
+    cout << endl;
+    cout << "Output:" << endl;
+
+    if(choice == 1){
+        p_result = createVerticalMirror(p_matrix, n);
+        printMatrix(p_result, n);
+    }else if(choice == 2){
+        p_result = createHorizontalMirror(p_matrix, n);
+        printMatrix(p_result, n);
+    }else if(choice == 3){
+        p_result = buildNeighborSumMatrix(p_matrix, n);
+        printMatrix(p_result, n);
+    }else if(choice == 4){
+        printMatrixViaVoid((void*)p_matrix, n);
     }else{
-        std::cout << "Unknown operation.\n";
-        deleteMatrix(matrix, size);
-        return 1;
+        cout << "Unknown operation." << endl;
     }
 
-    deleteMatrix(matrix, size);
+    if(p_result != nullptr){
+        freeMatrix(p_result, n);
+    }
+    freeMatrix(p_matrix, n);
     return 0;
 }
-
